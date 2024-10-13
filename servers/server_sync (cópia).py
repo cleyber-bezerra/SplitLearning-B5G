@@ -15,9 +15,8 @@ import subprocess
 import gc
 from multiprocessing import shared_memory
 import struct
-import argparse
 
-# suprimir aviso de atualização de biblioteca
+#suprimir aviso de atualização de biblioteca
 import warnings
 warnings.simplefilter("ignore", category=FutureWarning)
 
@@ -35,19 +34,9 @@ print("device: ", device)
 mymodel = ml_model.ml_model_hidden().to(device)
 print("mymodel: ", mymodel)
 
-# Função para processar o argumento ueNumPergNb
-def get_arguments():
-    parser = argparse.ArgumentParser(description='Receber o valor de ueNumPergNb.')
-    parser.add_argument('ueNumPergNb', type=int, help='Número de UEs a ser processado por cliente.')
-    args = parser.parse_args()
-    return args.ueNumPergNb
-
-# Recebe o valor ueNumPergNb
-ueNumPergNb = get_arguments()
-print(f"Valor de ueNumPergNb: {ueNumPergNb}")
-
-# Definir os caminhos de pastas
+### DEFINIR OS CAMINHOS DE PASTAS
 pastas = ["./csv/ia", "./images"]
+# Verificar e criar as pastas se não existirem
 for pasta in pastas:
     if not os.path.exists(pasta):
         os.makedirs(pasta)
@@ -62,19 +51,18 @@ s = socket.socket()
 s.settimeout(7200)  # 7200 seg, 60min, 2h de espera no socket
 s.bind(ADDR)
 
-# Inicialização das variáveis de armazenamento dos dados
+# Aqui assumimos que 'delays','throughput', 'energy_consumption' e 'packet_loss' são lidos da memória compartilhada
 delays = []
 throughput = []
 energy_consumption = []
 packet_loss = []
-distance_device = []
 
-# Tamanho de um valor double (8 bytes)
+# Tamanho de cada double (8 bytes)
 double_size = 8
 
-# Número total de UEs e número de vetores agora baseado no valor de ueNumPergNb
-total_ue_num = ueNumPergNb
-num_vectors = 5    # delay, throughput, consumo de energia, perda de pacotes, distance
+# Número total de UEs e número de vetores
+total_ue_num = 2  # Este valor deve ser o mesmo que 'totalUeNum' no C++
+num_vectors = 4    # delay, throughput, consumo de energia, perda de pacotes
 
 # Calcular o tamanho do buffer
 buffer_size = total_ue_num * num_vectors * double_size
@@ -83,19 +71,19 @@ buffer_size = total_ue_num * num_vectors * double_size
 def read_shared_memory(name, size, retries=5, delay=1):
     shm = None
     values = None
-    delay_vector, throughput_vector, energy_consumption_vector, lost_packets_vector, distance_vetor = [], [], [], [], []
-    
     for attempt in range(retries):
         try:
             shm = shared_memory.SharedMemory(name=name)
             buffer = shm.buf[:size]  # Lê exatamente o tamanho esperado
 
+            # Desempacotar os dados (assumindo um formato contínuo de doubles)
             values = struct.unpack(f'{total_ue_num * num_vectors}d', buffer)
-            delay_vector = values[::5]
-            throughput_vector = values[1::5]
-            energy_consumption_vector = values[2::5]
-            lost_packets_vector = values[3::5]
-            distance_vetor = values[4::5]
+
+            # Agora os dados são acessíveis em 'values'
+            delay_vector = values[::4]
+            throughput_vector = values[1::4]
+            energy_consumption_vector = values[2::4]
+            lost_packets_vector = values[3::4]
 
             break
 
@@ -105,66 +93,89 @@ def read_shared_memory(name, size, retries=5, delay=1):
 
     if shm:
        try:
-          shm.close()  # Fecha o objeto de memória compartilhada
+          shm.close()  # Fecha o objeto de memória compartilhada, mas não chama unlink ainda
        except Exception as e:
           print(f"Erro ao fechar a memória compartilhada: {e}")
 
-    return delay_vector, throughput_vector, energy_consumption_vector, lost_packets_vector, distance_vetor
+    return delay_vector, throughput_vector, energy_consumption_vector, lost_packets_vector
 
 # Nome e tamanho da memória compartilhada
 shared_memory_name = "ns3_shared_memory"
-num_entries = total_ue_num  # Número de clientes
-shared_memory_size = num_entries * num_vectors * double_size
+num_entries = len([1, 2])  # Número de clientes
+shared_memory_size = num_entries * 4 * 8  # 4 valores double por entrada (8 bytes cada): delay, throughput, energy, packet loss
 
 python_interpreter = "python3"
+
 
 # Lista para armazenar subprocessos
 subprocesses = []
 
 # Ler os dados da memória compartilhada
 try:
-    delay_vector, throughput_vector, energy_consumption_vector, lost_packets_vector, distance_vetor = read_shared_memory(shared_memory_name, shared_memory_size)
+    # Chamada para a função de leitura da memória compartilhada
+    delay_vector, throughput_vector, energy_consumption_vector, lost_packets_vector = read_shared_memory(shared_memory_name, shared_memory_size)
 
-    if delay_vector and throughput_vector and energy_consumption_vector and lost_packets_vector and distance_vetor:
+    # Verifica se os vetores foram corretamente preenchidos e não estão vazios
+    if delay_vector and throughput_vector and energy_consumption_vector and lost_packets_vector:
+        # Imprime os valores de cada vetor
         for i in range(len(delay_vector)):
-            print(f"Entrada {i + 1}: Delay: {delay_vector[i]}, Throughput: {throughput_vector[i]}, Energy Consumption: {energy_consumption_vector[i]}, Packet Loss: {lost_packets_vector[i]}, Distance Device: {distance_vetor[i]}")
+            print(f"Entrada {i + 1}: Delay: {delay_vector[i]}, Throughput: {throughput_vector[i]}, Energy Consumption: {energy_consumption_vector[i]}, Packet Loss: {lost_packets_vector[i]}")
 
+        # Processa cada entrada e inicia subprocessos
         for i in range(len(delay_vector)):
             delay = delay_vector[i]
             throughput = throughput_vector[i]
             energy = energy_consumption_vector[i]
             packet_loss_value = lost_packets_vector[i]
-            distance = distance_vetor[i]
 
+            # Armazena os valores nos respectivos vetores
             delays.append(delay)
             energy_consumption.append(energy)
             packet_loss.append(packet_loss_value)
-            distance_device.append(distance)
 
+            # Gera o caminho do script para o cliente correspondente
             script_path = f"scratch/SplitLearning-B5G/clients/sync/client{i + 1}_sync.py"
+            
+            # Inicia o subprocesso e armazena na lista subprocesses
             proc = subprocess.Popen(['gnome-terminal', '--', python_interpreter, script_path, str(delay)])
-            subprocesses.append(proc)
+            subprocesses.append(proc)  # Armazena o subprocesso para controle futuro
 
+        # Quando todas as leituras estiverem feitas e não houver mais processos utilizando a memória:
+        shm = shared_memory.SharedMemory(name=shared_memory_name)
+        # shm.unlink()  # Remove a memória compartilhada com segurança
+    else:
+        print("Os vetores retornados da memória compartilhada estão vazios ou não foram lidos corretamente.")
 
 except Exception as e:
     print(f"Erro ao ler memória compartilhada: {e}")
 
-# Fechar a memória compartilhada corretamente
+# Certifique-se de fechar corretamente a memória compartilhada
 try:
+    # Acessar e manipular a memória compartilhada
     shm = shared_memory.SharedMemory(name='ns3_shared_memory')
+    # Aqui manipula os dados...
+finally:
+    try:
+        # Cada processo ou thread deve fechar a memória
+        shm = shared_memory.SharedMemory(name='ns3_shared_memory')
+        
+        # Aguarda todos os subprocessos finalizarem
+        for proc in subprocesses:
+            proc.wait()  # Use wait() para aguardar a finalização do subprocesso
 
-    for proc in subprocesses:
-        proc.wait()
+        # Força a coleta de lixo para garantir que todas as referências foram liberadas
+        gc.collect()
 
-    gc.collect()
+        # Fechar a memória compartilhada
+        shm.close()
+        # Remover a memória compartilhada
+        shm.unlink()
 
-    shm.close()
-    shm.unlink()
+    except Exception as e:
+        print(f"Erro ao fechar ou remover a memória compartilhada: {e}")
 
-except Exception as e:
-    print(f"Erro ao fechar ou remover a memória compartilhada: {e}")
 
-USER = num_entries
+USER = num_entries  # Número de clientes a serem atendidos simultaneamente do CSV.
 s.listen(USER)
 print("Waiting clients...")
 
@@ -179,19 +190,25 @@ for user in user_info:
     print("Received request message from client <{}>".format(user["addr"]))
     user["conn"].sendall(DAM)
 
-# Treinamento
+
+# ------------------- start training --------------------
 def train(user):
 
     p_start = process_time()
+
     i = 1
     ite_counter = -1
     user_counter = 0
     lr = 0.005
     optimizer = torch.optim.SGD(mymodel.parameters(), lr=lr, momentum=0.9, weight_decay=5e-4)
+
+    # Variáveis para contabilizar a sobrecarga de comunicação
     total_comm_time = 0
     total_comm_data = 0
     
     while True:
+
+        ### receive MODE
         start_comm_time = time.time()
         recv_mode = sf.recv_size_n_msg(user["conn"])
         end_comm_time = time.time()
@@ -280,6 +297,7 @@ def train(user):
     print("Total Communication Time: ", total_comm_time)
     print("Total Communication Data: ", total_comm_data, "bytes")
 
+# Função principal para iniciar o treinamento
 def main():
     train(user_info[0])
 

@@ -30,7 +30,10 @@ def plot_graph_from_csv(file_path):
         plt.xlabel('Users')
         plt.ylabel('Values')
         plt.title('Network Simulation Metrics')
-        plt.legend(['Delay (s)', 'Throughput (Mbps)', 'EnergyConsumption (J)', 'LostPackets (%)'], loc='upper left', fontsize=12)
+        plt.legend(['Delay (s)', 'Throughput (Mbps)', 'EnergyConsumption (J)', 'LostPackets (%)'], loc='center left', bbox_to_anchor=(1,0.5), fontsize=12)
+
+        #Ajuste o layout para nao cortar a legenda externa
+        plt.tight_layout()
 
         # Mostrar o gráfico
         plt.grid(True)

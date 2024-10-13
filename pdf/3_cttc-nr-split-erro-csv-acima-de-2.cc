@@ -28,13 +28,8 @@ NS_LOG_COMPONENT_DEFINE("CttcNrDemo");
 
 int main(int argc, char* argv[])
 {
-
-    // Definir a seed fixa para a simulação
-    SeedManager::SetSeed(1); // Fixa a seed para garantir que os valores aleatórios sejam repetíveis
-    SeedManager::SetRun(1);  // Define o número da "run" para criar diferentes execuções com a mesma seed, se necessário
-
-    uint16_t gNbNum = 1; //numero de gNB
-    uint16_t ueNumPergNb = 3; //Numero de UE
+    uint16_t gNbNum = 1;
+    uint16_t ueNumPergNb = 4;
     bool logging = false;
     bool doubleOperationalBand = true;
     uint32_t udpPacketSizeULL = 100;
@@ -53,9 +48,6 @@ int main(int argc, char* argv[])
     std::string simTag = "default";
     std::string outputDir = "./";
     uint32_t totalUeNum = ueNumPergNb * gNbNum; // Calculando o número total de UEs
-    double distanceLimit = 150.0; // Limite de distanciamento em metros
-    double lossExponent = 2.0; // 2,3,4
-
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("gNbNum", "The number of gNbs in multiple-ue topology", gNbNum);
@@ -76,7 +68,6 @@ int main(int argc, char* argv[])
     cmd.AddValue("totalTxPower", "total tx power that will be proportionally assigned to bands, CCs and bandwidth parts depending on each BWP bandwidth ", totalTxPower);
     cmd.AddValue("simTag", "tag to be appended to output filenames to distinguish simulation campaigns", simTag);
     cmd.AddValue("outputDir", "directory where to store simulation results", outputDir);
-    cmd.AddValue("lossExponent", "Loss exponent for signal attenuation (2=residential, 3=open, 4=urban)", lossExponent);
     cmd.Parse(argc, argv);
 
     NS_ABORT_IF(centralFrequencyBand1 < 0.5e9 && centralFrequencyBand1 > 100e9);
@@ -107,8 +98,9 @@ int main(int argc, char* argv[])
 
     MobilityHelper mobility;
     mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
-    mobility.Install(gridScenario.GetBaseStations()); //Definir posições fixas para gNBs (Base Stations)
 
+    // Definir posições fixas para gNBs (Base Stations)
+    mobility.Install(gridScenario.GetBaseStations());
     for (uint32_t i = 0; i < gridScenario.GetBaseStations().GetN(); ++i)
     {
         Ptr<Node> gNbNode = gridScenario.GetBaseStations().Get(i);
@@ -118,28 +110,11 @@ int main(int argc, char* argv[])
 
     // Definir posições fixas para UEs
     mobility.Install(gridScenario.GetUserTerminals());
-    
-    std::vector<double> distanceVector(totalUeNum, 0.0);
-    
     for (uint32_t i = 0; i < gridScenario.GetUserTerminals().GetN(); ++i)
     {
         Ptr<Node> ueNode = gridScenario.GetUserTerminals().Get(i);
         Ptr<MobilityModel> mob = ueNode->GetObject<MobilityModel>();
-        mob->SetPosition(Vector(10.0 + i * 10, 5.0, 1.5));
-
-        // Calcular distância até o gNB mais próximo
-        Ptr<Node> gNbNode = gridScenario.GetBaseStations().Get(0);
-        Ptr<MobilityModel> gNbMob = gNbNode->GetObject<MobilityModel>();
-        Vector uePos = mob->GetPosition();
-        Vector gNbPos = gNbMob->GetPosition();
-        double distance = std::sqrt(std::pow(uePos.x - gNbPos.x, 2) + std::pow(uePos.y - gNbPos.y, 2) + std::pow(uePos.z - gNbPos.z, 2));
-
-        distanceVector[i] = distance;
-
-        if (distance > distanceLimit)
-        {
-            std::cerr << "O UE " << ueNode->GetId() << " está a " << distance << " metros, fora do limite de " << distanceLimit << " metros.\n";
-        }
+        mob->SetPosition(Vector(10.0 + i * 10, 5.0, 1.5));  // Posição fixada para UEs
     }
 
 
@@ -177,7 +152,6 @@ int main(int argc, char* argv[])
     Config::SetDefault("ns3::ThreeGppChannelModel::UpdatePeriod", TimeValue(MilliSeconds(0)));
     nrHelper->SetChannelConditionModelAttribute("UpdatePeriod", TimeValue(MilliSeconds(0)));
     nrHelper->SetPathlossAttribute("ShadowingEnabled", BooleanValue(false));
-    //nrHelper->SetPathlossAttribute("LosExponent", DoubleValue(lossExponent)); // Usando o lossExponent
     nrHelper->InitializeOperationBand(&band1);
 
     double totalBandwidth = bandwidthBand1;
@@ -321,32 +295,6 @@ int main(int argc, char* argv[])
     std::vector<double> throughputVector(totalUeNum, 0.0);
     std::vector<double> delayVector(totalUeNum, 0.0);
     std::vector<double> energyConsumption(totalUeNum, 0.0); // ou algum valor padrão
-    //std::vector<double> distanceVector(totalUeNum, 0.0); 
-
-    // Potência estimada para processamento por UE (em Watts)
-    double processingPowerPerUE = 0.05; // Exemplo: 50 mW por UE
-
-
-    // Definir posições fixas para UEs e calcular distâncias
-    mobility.Install(gridScenario.GetUserTerminals());
-
-    for (uint32_t i = 0; i < gridScenario.GetUserTerminals().GetN(); ++i) {
-        Ptr<Node> ueNode = gridScenario.GetUserTerminals().Get(i);
-        Ptr<MobilityModel> mob = ueNode->GetObject<MobilityModel>();
-        mob->SetPosition(Vector(10.0 + i * 10, 5.0, 1.5));  
-
-        Ptr<Node> gNbNode = gridScenario.GetBaseStations().Get(0);
-        Ptr<MobilityModel> gNbMob = gNbNode->GetObject<MobilityModel>();
-        Vector uePos = mob->GetPosition();
-        Vector gNbPos = gNbMob->GetPosition();
-
-        double distance = std::sqrt(std::pow(uePos.x - gNbPos.x, 2) + std::pow(uePos.y - gNbPos.y, 2) + std::pow(uePos.z - gNbPos.z, 2));
-        distanceVector[i] = distance;
-
-        if (distance > distanceLimit) {
-            std::cerr << "O UE " << ueNode->GetId() << " está a " << distance << " metros, fora do limite de " << distanceLimit << " metros.\n";
-        }
-    }
 
     monitor->CheckForLostPackets();
     Ptr<Ipv4FlowClassifier> classifier = DynamicCast<Ipv4FlowClassifier>(flowmonHelper.GetClassifier());
@@ -356,32 +304,21 @@ int main(int argc, char* argv[])
     double averageFlowThroughput = 0.0;
     double averageFlowDelay = 0.0;
 
-    // Adicionar cálculo de consumo de energia por processamento de pacotes
     for (std::map<FlowId, FlowMonitor::FlowStats>::const_iterator i = stats.begin(); i != stats.end(); ++i)
     {
-        uint32_t ueIndex = (i->first - 1) % totalUeNum;
-
-        // Usa a distância do vetor calculado anteriormente
-        double distance = distanceVector[ueIndex];
+        // Obter o índice de UE correspondente ao FlowId
+        uint32_t ueIndex = (i->first - 1) % totalUeNum;  // Calcula o índice do UE a partir do FlowId
 
         double throughput = i->second.rxBytes * 8.0 / flowDuration / 1000 / 1000; // Mbps
         double delay = i->second.rxPackets > 0 ? i->second.delaySum.GetSeconds() / i->second.rxPackets : 0.0;
         uint32_t lostPackets = i->second.txPackets - i->second.rxPackets;
 
-        // Calcular energia consumida pelo processamento
-        //double energyConsumed = processingPowerPerUE * flowDuration; 
-        double energyConsumed = processingPowerPerUE * simTime.GetSeconds(); 
-
-        double adjustedThroughput = throughput / std::pow(distance, lossExponent); // Ajusta o throughput com base na distância e na perda de sinal
-        double adjustedDelay = delay * std::pow(distance, lossExponent);           // Ajusta o delay
-        double adjustedEnergyConsumption = energyConsumed * std::pow(distance, lossExponent); // Ajusta o consumo de energia
-
-
+        // Armazenar os valores nos vetores baseados no índice do UE
         lostPacketsVector[ueIndex] = lostPackets;
-        throughputVector[ueIndex] = adjustedThroughput;
-        delayVector[ueIndex] = adjustedDelay;
-        energyConsumption[ueIndex] = adjustedEnergyConsumption;
-        
+        throughputVector[ueIndex] = throughput;
+        delayVector[ueIndex] = delay;
+
+        // Calcular valores médios
         averageFlowThroughput += throughput;
         if (i->second.rxPackets > 0)
         {
@@ -396,16 +333,15 @@ int main(int argc, char* argv[])
     // Verificar se os vetores têm o tamanho correto
     if (throughputVector.size() != delayVector.size() ||
         throughputVector.size() != energyConsumption.size() ||
-        throughputVector.size() != distanceVector.size() ||
         throughputVector.size() != lostPacketsVector.size()) {
         std::cerr << "Erro: Todos os vetores devem ter o mesmo tamanho." << std::endl;
         return 1;
     }
 
-    // ALOCACAO DE MEMORIA COMPARTILHADA
+       // ALOCACAO DE MEMORIA COMPARTILHADA
     const char* shm_name = "ns3_shared_memory";
     size_t element_size = sizeof(double); // Tamanho de um elemento (double)
-    size_t num_vectors = 5; // Agora temos 5 vetores: delay, throughput, consumo de energia, perda de pacotes e distância
+    size_t num_vectors = 4; // Número de vetores: delay, throughput, consumo de energia, perda de pacotes
     size_t size = totalUeNum * element_size * num_vectors; // Calcular o tamanho correto da memória
 
     int shm_fd = shm_open(shm_name, O_CREAT | O_RDWR, 0666);
@@ -431,11 +367,10 @@ int main(int argc, char* argv[])
 
     // Escrever os dados na memória compartilhada
     for (size_t i = 0; i < totalUeNum; ++i) {
-        data[i * 5] = delayVector[i];
-        data[i * 5 + 1] = throughputVector[i];
-        data[i * 5 + 2] = energyConsumption[i];
-        data[i * 5 + 3] = lostPacketsVector[i];
-        data[i * 5 + 4] = distanceVector[i]; // Adicionando a distância
+        data[i * 4] = delayVector[i];
+        data[i * 4 + 1] = throughputVector[i];
+        data[i * 4 + 2] = energyConsumption[i];
+        data[i * 4 + 3] = lostPacketsVector[i];
     }
 
     std::cout << "Dados escritos na memória compartilhada." << std::endl;
@@ -469,17 +404,11 @@ int main(int argc, char* argv[])
     std::cout << std::endl;
 
 
+    // Imprimir os vetores
     std::cout << "Energy Consumption: ";
     for (const auto& energyConsum : energyConsumption)
     {
         std::cout << energyConsum << " ";
-    }
-    std::cout << std::endl;
-
-    std::cout << "Device Distance: ";
-    for (const auto& distancevector : distanceVector)
-    {
-        std::cout << distancevector << " ";
     }
     std::cout << std::endl;
 
@@ -524,17 +453,6 @@ int main(int argc, char* argv[])
     }
     outputFileLostPacketsVector.close();
 
-    //Exporta CSV com dados do Distance
-    std::ofstream outputFileLostDistance("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/images/distance.csv");
-    outputFileLostDistance << "User,Distance\n";
-    for (size_t i = 0; i < throughputVector.size(); ++i) {
-        outputFileLostDistance << i << ","
-                   << distanceVector[i] << "\n";
-    }
-    outputFileLostDistance.close();
-
-
-
     //Exporta CSV com todos os dados dos conjunto de vetores
     std::ofstream outputFileAll("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/images/line_all.csv");
     outputFileAll << "User,Delay,Throughput,EnergyConsumption,LostPackets\n";
@@ -551,9 +469,10 @@ int main(int argc, char* argv[])
     }
     outputFileAll.close();
 
+
     // Exportar as posições para um arquivo CSV - UE e gNB
     std::ofstream posFile("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/images/positions.csv");
-    posFile << "NodeType,NodeId,X,Y,Z,DistanceFromBSS\n";
+    posFile << "NodeType,NodeId,X,Y,Z\n";
 
     // Exportar posições dos gNBs
     for (uint32_t i = 0; i < gridScenario.GetBaseStations().GetN(); ++i)
@@ -561,24 +480,16 @@ int main(int argc, char* argv[])
         Ptr<Node> gNbNode = gridScenario.GetBaseStations().Get(i);
         Ptr<MobilityModel> mob = gNbNode->GetObject<MobilityModel>();
         Vector pos = mob->GetPosition();
-        posFile << "gNB," << gNbNode->GetId() << "," << pos.x << "," << pos.y << "," << pos.z << ",0\n";  // gNB está a 0 metros de si mesma
+        posFile << "gNB," << gNbNode->GetId() << "," << pos.x << "," << pos.y << "," << pos.z << "\n";
     }
 
-    // Exportar posições e distâncias dos UEs
+    // Exportar posições dos UEs
     for (uint32_t i = 0; i < gridScenario.GetUserTerminals().GetN(); ++i)
     {
         Ptr<Node> ueNode = gridScenario.GetUserTerminals().Get(i);
         Ptr<MobilityModel> mob = ueNode->GetObject<MobilityModel>();
         Vector pos = mob->GetPosition();
-
-        // Calcular a distância do UE à gNB
-        Ptr<Node> gNbNode = gridScenario.GetBaseStations().Get(0);  // gNB mais próxima
-        Ptr<MobilityModel> gNbMob = gNbNode->GetObject<MobilityModel>();
-        Vector gNbPos = gNbMob->GetPosition();
-
-        double distance = std::sqrt(std::pow(pos.x - gNbPos.x, 2) + std::pow(pos.y - gNbPos.y, 2) + std::pow(pos.z - gNbPos.z, 2));
-
-        posFile << "UE," << ueNode->GetId() << "," << pos.x << "," << pos.y << "," << pos.z << "," << distance << "\n";
+        posFile << "UE," << ueNode->GetId() << "," << pos.x << "," << pos.y << "," << pos.z << "\n";
     }
     posFile.close();
 
