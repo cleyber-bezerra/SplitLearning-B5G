@@ -497,7 +497,7 @@ int main(int argc, char* argv[])
     std::cout << "Average Throughput: " << averageFlowThroughput << " Mbps\n";
 
     //Exporta CSV com dados do Delay
-    std::ofstream outputFileDelay("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/images/delay.csv");
+    std::ofstream outputFileDelay("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/plots/delay.csv");
     outputFileDelay << "User,Delay\n";
     for (size_t i = 0; i < throughputVector.size(); ++i) {
         outputFileDelay << i << ","
@@ -506,7 +506,7 @@ int main(int argc, char* argv[])
     outputFileDelay.close(); 
 
     //Exporta CSV com dados do Throughput
-    std::ofstream outputFileThroughput("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/images/throughput.csv");
+    std::ofstream outputFileThroughput("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/plots/throughput.csv");
     outputFileThroughput << "User,Throughput\n";
     for (size_t i = 0; i < throughputVector.size(); ++i) {
         outputFileThroughput << i << ","
@@ -515,7 +515,7 @@ int main(int argc, char* argv[])
     outputFileThroughput.close();
 
     //Exporta CSV com dados do Energy Consumption
-    std::ofstream outputFileEnergyConsumption("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/images/energyConsumption.csv");
+    std::ofstream outputFileEnergyConsumption("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/plots/energyConsumption.csv");
     outputFileEnergyConsumption << "User,EnergyConsumption\n";
     for (size_t i = 0; i < throughputVector.size(); ++i) {
         outputFileEnergyConsumption << i << ","
@@ -524,7 +524,7 @@ int main(int argc, char* argv[])
     outputFileEnergyConsumption.close();
 
     //Exporta CSV com dados do Lost Packets
-    std::ofstream outputFileLostPacketsVector("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/images/lostPacketsVector.csv");
+    std::ofstream outputFileLostPacketsVector("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/plots/lostPacketsVector.csv");
     outputFileLostPacketsVector << "User,LostPackets\n";
     for (size_t i = 0; i < throughputVector.size(); ++i) {
         outputFileLostPacketsVector << i << ","
@@ -533,7 +533,7 @@ int main(int argc, char* argv[])
     outputFileLostPacketsVector.close();
 
     //Exporta CSV com dados do Distance
-    std::ofstream outputFileLostDistance("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/images/distance.csv");
+    std::ofstream outputFileLostDistance("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/plots/distance.csv");
     outputFileLostDistance << "User,Distance\n";
     for (size_t i = 0; i < throughputVector.size(); ++i) {
         outputFileLostDistance << i << ","
@@ -542,7 +542,7 @@ int main(int argc, char* argv[])
     outputFileLostDistance.close();
 
     //Exporta CSV com dados do tipo de dispositivo (IoT oiu Smartphone)
-    std::ofstream outputFileDeviceType("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/images/deviceType.csv");
+    std::ofstream outputFileDeviceType("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/plots/deviceType.csv");
     outputFileDeviceType << "User,DeviceType\n";
     for (size_t i = 0; i < totalUeNum; ++i) {
         outputFileDeviceType << i << "," << (deviceTypeVector[i] == 0 ? "Smartphone" : "IoT") << "\n";
@@ -551,8 +551,8 @@ int main(int argc, char* argv[])
 
 
     //Exporta CSV com todos os dados dos conjunto de vetores
-    std::ofstream outputFileAll("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/images/line_all.csv");
-    outputFileAll << "User,Delay,Throughput,EnergyConsumption,LostPackets\n";
+    std::ofstream outputFileAll("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/plots/line_all.csv");
+    outputFileAll << "User,Delay,Throughput,EnergyConsumption,LostPackets,Distance\n";
 
     // Supondo que os vetores delayVector, throughputVector, etc. têm o mesmo tamanho.
     size_t numEntries = delayVector.size(); // ou throughputVector.size(), assumindo que todos têm o mesmo tamanho
@@ -568,7 +568,7 @@ int main(int argc, char* argv[])
     outputFileAll.close();
 
     // Exportar as posições para um arquivo CSV - UE e gNB
-    std::ofstream posFile("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/images/positions.csv");
+    std::ofstream posFile("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/plots/positions.csv");
     posFile << "NodeType,NodeId,X,Y,Z,DistanceFromBSS\n";
 
     // Exportar posições dos gNBs
