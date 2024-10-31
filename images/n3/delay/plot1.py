@@ -7,7 +7,7 @@ def process_file(file_path, color, label):
     df = pd.read_csv(file_path)
 
     # Calcular a média e erro padrão para rx_packets agrupados por cliente
-    grouped = df.groupby('User')['Validation Accuracy'].agg(['mean', 'std', 'count'])
+    grouped = df.groupby('User')['Delay'].agg(['mean', 'std', 'count'])
     grouped['stderr'] = grouped['std'] / np.sqrt(grouped['count'])
 
     # Calcular intervalo de confiança (95% CI)
@@ -36,9 +36,9 @@ def process_file(file_path, color, label):
     plt.fill_between(clients_complete, ci_low, ci_high, color=color, alpha=0.1, linewidth=0)
 
 # Caminhos para os arquivos
-files = ['low_accuracy.csv', 'medium_accuracy.csv', 'high_accuracy.csv']
+files = ['0.csv', '1.csv', '2.csv']
 colors = ['g', 'b', 'r']
-labels = ['Low Accuracy', 'Moderate Accuracy', 'High Accuracy']
+labels = ['Delay 1', 'Delay 2', 'Delay 3']
 
 # Configuração do plot
 plt.figure(figsize=(10, 6))
@@ -48,19 +48,18 @@ for file, color, label in zip(files, colors, labels):
     process_file(file, color, label)
 
 # Configuração do gráfico
-plt.title('Average Accuracy for each User', fontsize=16)
+plt.title('Average Delay for each User', fontsize=16)
 plt.xlabel('Users', fontsize=15)
-plt.ylabel('Accuracy', fontsize=15)
+plt.ylabel('Delay', fontsize=15)
 plt.grid(True)
 #plt.legend(loc='upper right', fontsize=13)#superior direita
 plt.legend(loc='lower right', fontsize=13) #inferior direita
-plt.xticks(np.arange(1, 5), rotation=0, fontsize=13)
-#plt.xticks(np.arange(1, len(users) + 1), rotation=0, fontsize=13)
+plt.xticks(np.arange(0, 6), rotation=0, fontsize=13)
 plt.yticks(fontsize=13)
 plt.ylim(0, None)  # Forçar eixo y a começar do zero
 plt.tight_layout()
 
 # Salvar e exibir o gráfico
-name_output_file = "packets_low_moderate_high_accuracy"
+name_output_file = "delay_low_moderate_high"
 plt.savefig(name_output_file + ".png")
 #plt.show()
