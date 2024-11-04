@@ -12,9 +12,13 @@
 #include "ns3/flow-monitor-helper.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/constant-position-mobility-model.h"
+#include "ns3/random-variable-stream.h"
+#include "ns3/position-allocator.h"
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <filesystem>
+#include <iostream> 
 #include <sstream>
 #include <sys/mman.h>  // Para mmap, munmap
 #include <sys/stat.h>  // Para shm_open, shm_unlink
@@ -25,15 +29,33 @@
 using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("CttcNrDemo");
 
+// Função para verificar se o arquivo existe
+bool fileExists(const std::string& filename) {
+    return std::filesystem::exists(filename);
+}
+
+// Função para escrever cabeçalhos apenas se o arquivo não existir
+void writeHeader(std::ofstream& file, const std::string& header) {
+    // Escreve o cabeçalho se o arquivo estiver vazio (ou seja, acabou de ser criado)
+    if (file.tellp() == std::ofstream::pos_type(0)) {
+        file << header;
+    }
+}
+
+
 int main(int argc, char* argv[])
 {
 
     // Definir a seed fixa para a simulação
-    SeedManager::SetSeed(5); // Fixa a seed para garantir que os valores aleatórios sejam repetíveis
-    SeedManager::SetRun(5);  // Define o número da "run" para criar diferentes execuções com a mesma seed, se necessário
+    //SeedManager::SetSeed(2); // Fixa a seed para garantir que os valores aleatórios sejam repetíveis
+    //SeedManager::SetRun(2);  // Define o número da "run" para criar diferentes execuções com a mesma seed, se necessário
+
+    SeedManager::SetSeed(time(0)); // Usar o tempo atual como seed para gerar aleatoriedade
+    SeedManager::SetRun(time(0) % 100);  // Incremental ou aleatório
+
 
     uint16_t gNbNum = 1;
-    uint16_t ueNumPergNb = 3;
+    uint16_t ueNumPergNb = 4;
     bool logging = false;
     bool doubleOperationalBand = true;
     uint32_t udpPacketSizeULL = 100;
@@ -44,16 +66,26 @@ int main(int argc, char* argv[])
     Time udpAppStartTime = MilliSeconds(400);
     uint16_t numerologyBwp1 = 4;
     double centralFrequencyBand1 = 28e9;
-    double bandwidthBand1 = 50e6;
+    double bandwidthBand1 = 800e6;
     uint16_t numerologyBwp2 = 2;
     double centralFrequencyBand2 = 28.2e9;
-    double bandwidthBand2 = 50e6;
+    double bandwidthBand2 = 800e6;
     double totalTxPower = 35;
     std::string simTag = "default";
     std::string outputDir = "./";
     uint32_t totalUeNum = ueNumPergNb * gNbNum; // Calculando o número total de UEs
-    double distanceLimit = 150.0; // Limite de distanciamento em metros
+    double distanceLimit = 200.0; // Limite de distanciamento em metros
+    double processingPowerPerUE = 0.05; //potencia estimada para processamento por UE
     double lossExponent = 3.0; // 2,3,4
+
+
+// ALOCACAO DE MEMORIA DOS VETORES
+    std::vector<uint32_t> lostPacketsVector(totalUeNum);
+    std::vector<double> throughputVector(totalUeNum, 0.0);
+    std::vector<double> delayVector(totalUeNum, 0.0);
+    std::vector<double> energyConsumption(totalUeNum, 0.0); // ou algum valor padrão
+    std::vector<double> distanceVector(totalUeNum, 0.0);
+    std::vector<uint32_t> deviceTypeVector(totalUeNum, 0); // 0 para smartphone, 1 para IoT
 
 
     CommandLine cmd(__FILE__);
@@ -109,34 +141,54 @@ int main(int argc, char* argv[])
 
     // Definir posições fixas para gNBs (Base Stations)
     mobility.Install(gridScenario.GetBaseStations());
-    for (uint32_t i = 0; i < gridScenario.GetBaseStations().GetN(); ++i)
-    {
-        Ptr<Node> gNbNode = gridScenario.GetBaseStations().Get(i);
-        Ptr<MobilityModel> mob = gNbNode->GetObject<MobilityModel>();
-        mob->SetPosition(Vector(0.0 + i * 50, 0.0, 10.0));  // Posição fixada para gNBs
-    }
+    
+    // Configuração do posicionamento aleatório para os UEs
+    Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable>();
+    x->SetAttribute("Min", DoubleValue(0.0));
+    x->SetAttribute("Max", DoubleValue(150.0));
 
-    // Definir posições fixas para UEs
+    Ptr<UniformRandomVariable> y = CreateObject<UniformRandomVariable>();
+    y->SetAttribute("Min", DoubleValue(0.0));
+    y->SetAttribute("Max", DoubleValue(150.0));
+
+    // Define Z constante
+    Ptr<ConstantRandomVariable> z = CreateObject<ConstantRandomVariable>();
+    z->SetAttribute("Constant", DoubleValue(1.5));
+
+    Ptr<RandomBoxPositionAllocator> randomPositionAlloc = CreateObject<RandomBoxPositionAllocator>();
+    randomPositionAlloc->SetX(x);
+    randomPositionAlloc->SetY(y);
+    randomPositionAlloc->SetZ(z);  // Define Z fixo em 1.5
+
+    // Aplicar o modelo de mobilidade com posições aleatórias para os UEs
+    mobility.SetPositionAllocator(randomPositionAlloc);
+    mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
     mobility.Install(gridScenario.GetUserTerminals());
-    for (uint32_t i = 0; i < gridScenario.GetUserTerminals().GetN(); ++i)
-    {
+
+    // Cálculo do consumo de energia baseado na distância
+    for (uint32_t i = 0; i < gridScenario.GetUserTerminals().GetN(); ++i) {
         Ptr<Node> ueNode = gridScenario.GetUserTerminals().Get(i);
         Ptr<MobilityModel> mob = ueNode->GetObject<MobilityModel>();
-        mob->SetPosition(Vector(10.0 + i * 10, 5.0, 1.5));  // Posição fixada para UEs
+        Vector uePos = mob->GetPosition();
 
         // Calcular distância para a gNB mais próxima
         Ptr<Node> gNbNode = gridScenario.GetBaseStations().Get(0);  // Supondo que a gNB 0 é a mais próxima
         Ptr<MobilityModel> gNbMob = gNbNode->GetObject<MobilityModel>();
-        Vector uePos = mob->GetPosition();
         Vector gNbPos = gNbMob->GetPosition();
 
         double distance = std::sqrt(std::pow(uePos.x - gNbPos.x, 2) + std::pow(uePos.y - gNbPos.y, 2) + std::pow(uePos.z - gNbPos.z, 2));
+        distanceVector[i] = distance;
 
-        // Verifica se a distância é maior que o limite e corrige se necessário
+        // Calcular consumo de energia baseado na distância (exemplo: proporcional ao quadrado da distância)
+        double distanceFactor = (distance > 0) ? distance : 1.0; // Evita divisão por zero
+        double powerConsumption = processingPowerPerUE * std::pow(distanceFactor, 2); // Exemplo de consumo quadrático
+
+        // Armazenar o consumo de energia diretamente em energyConsumption
+        energyConsumption[i] = powerConsumption * simTime.GetSeconds();
+
+
         if (distance > distanceLimit) {
             std::cerr << "O UE " << ueNode->GetId() << " está a " << distance << " metros, fora do limite de " << distanceLimit << " metros.\n";
-            // Aqui, você pode ajustar a posição do UE para ficar dentro do limite
-            // Neste exemplo, vamos apenas deixar uma mensagem de erro
         }
     }
 
@@ -313,14 +365,6 @@ int main(int argc, char* argv[])
     Simulator::Stop(simTime);
     Simulator::Run();
 
-    // ALOCACAO DE MEMORIA DOS VETORES
-    std::vector<uint32_t> lostPacketsVector(totalUeNum);
-    std::vector<double> throughputVector(totalUeNum, 0.0);
-    std::vector<double> delayVector(totalUeNum, 0.0);
-    std::vector<double> energyConsumption(totalUeNum, 0.0); // ou algum valor padrão
-    std::vector<double> distanceVector(totalUeNum, 0.0);
-    std::vector<uint32_t> deviceTypeVector(totalUeNum, 0); // 0 para smartphone, 1 para IoT
-
     // Definir 50% como smartphones e 50% como IoT
     for (uint32_t i = 0; i < totalUeNum; ++i) {
         if (i < totalUeNum / 2) {
@@ -330,28 +374,33 @@ int main(int argc, char* argv[])
         }
     }
 
-    // Potência estimada para processamento por UE (em Watts)
-    double processingPowerPerUE = 0.05; // Exemplo: 50 mW por UE
 
-    // Definir posições fixas para UEs e calcular distâncias
-    mobility.Install(gridScenario.GetUserTerminals());
+    // Cálculo do consumo de energia baseado na distância
     for (uint32_t i = 0; i < gridScenario.GetUserTerminals().GetN(); ++i) {
         Ptr<Node> ueNode = gridScenario.GetUserTerminals().Get(i);
         Ptr<MobilityModel> mob = ueNode->GetObject<MobilityModel>();
-        mob->SetPosition(Vector(10.0 + i * 10, 5.0, 1.5));  
-
-        Ptr<Node> gNbNode = gridScenario.GetBaseStations().Get(0);
-        Ptr<MobilityModel> gNbMob = gNbNode->GetObject<MobilityModel>();
         Vector uePos = mob->GetPosition();
+
+        // Calcular distância para a gNB mais próxima
+        Ptr<Node> gNbNode = gridScenario.GetBaseStations().Get(0);  // Supondo que a gNB 0 é a mais próxima
+        Ptr<MobilityModel> gNbMob = gNbNode->GetObject<MobilityModel>();
         Vector gNbPos = gNbMob->GetPosition();
 
         double distance = std::sqrt(std::pow(uePos.x - gNbPos.x, 2) + std::pow(uePos.y - gNbPos.y, 2) + std::pow(uePos.z - gNbPos.z, 2));
         distanceVector[i] = distance;
 
+        // Calcular consumo de energia baseado na distância (exemplo: proporcional ao quadrado da distância)
+        double distanceFactor = (distance > 0) ? distance : 1.0; // Evita divisão por zero
+        double powerConsumption = processingPowerPerUE * std::pow(distanceFactor, 2); // Exemplo de consumo quadrático
+
+        // Armazenar o consumo de energia no vetor
+        energyConsumption[i] = powerConsumption * simTime.GetSeconds();
+
         if (distance > distanceLimit) {
             std::cerr << "O UE " << ueNode->GetId() << " está a " << distance << " metros, fora do limite de " << distanceLimit << " metros.\n";
         }
     }
+
 
     monitor->CheckForLostPackets();
     Ptr<Ipv4FlowClassifier> classifier = DynamicCast<Ipv4FlowClassifier>(flowmonHelper.GetClassifier());
@@ -370,16 +419,14 @@ int main(int argc, char* argv[])
         double delay = i->second.rxPackets > 0 ? i->second.delaySum.GetSeconds() / i->second.rxPackets : 0.0;
         uint32_t lostPackets = i->second.txPackets - i->second.rxPackets;
 
-        // Calcular energia consumida pelo processamento ***
-        //double energyConsumed = processingPowerPerUE * flowDuration; 
-        double energyConsumed = processingPowerPerUE * simTime.GetSeconds(); 
 
         // Armazenar os valores nos vetores baseados no índice do UE
         lostPacketsVector[ueIndex] = lostPackets;
         throughputVector[ueIndex] = throughput;
         delayVector[ueIndex] = delay;
         //distanceVector[ueIndex] = delay;
-        energyConsumption[ueIndex] = energyConsumed;
+        //energyConsumption[ueIndex] = energyConsumption;
+
 
         // Calcular valores médios
         averageFlowThroughput += throughput;
@@ -498,72 +545,73 @@ int main(int argc, char* argv[])
 
     //Exporta CSV com dados do Delay
     std::ofstream outputFileDelay("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/plots/delay.csv");
-    outputFileDelay << "User,Delay\n";
+    writeHeader(outputFileDelay, "User,Delay\n");
     for (size_t i = 0; i < throughputVector.size(); ++i) {
-        outputFileDelay << i << ","
+        outputFileDelay << i+1 << ","
                    << delayVector[i] << "\n";
     }
     outputFileDelay.close(); 
 
     //Exporta CSV com dados do Throughput
     std::ofstream outputFileThroughput("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/plots/throughput.csv");
-    outputFileThroughput << "User,Throughput\n";
+    writeHeader(outputFileThroughput , "User,Throughput\n");
     for (size_t i = 0; i < throughputVector.size(); ++i) {
-        outputFileThroughput << i << ","
+        outputFileThroughput << i+1 << ","
                    << throughputVector[i] << "\n";
     }
     outputFileThroughput.close();
 
     //Exporta CSV com dados do Energy Consumption
     std::ofstream outputFileEnergyConsumption("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/plots/energyConsumption.csv");
-    outputFileEnergyConsumption << "User,EnergyConsumption\n";
+    writeHeader(outputFileEnergyConsumption , "User,EnergyConsumption\n");
     for (size_t i = 0; i < throughputVector.size(); ++i) {
-        outputFileEnergyConsumption << i << ","
+        outputFileEnergyConsumption << i+1 << ","
                    << energyConsumption[i] << "\n";
     }
     outputFileEnergyConsumption.close();
 
     //Exporta CSV com dados do Lost Packets
     std::ofstream outputFileLostPacketsVector("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/plots/lostPacketsVector.csv");
-    outputFileLostPacketsVector << "User,LostPackets\n";
+    writeHeader(outputFileLostPacketsVector , "User,LostPackets\n");
     for (size_t i = 0; i < throughputVector.size(); ++i) {
-        outputFileLostPacketsVector << i << ","
+        outputFileLostPacketsVector << i+1 << ","
                    << lostPacketsVector[i] << "\n";
     }
     outputFileLostPacketsVector.close();
 
     //Exporta CSV com dados do Distance
     std::ofstream outputFileLostDistance("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/plots/distance.csv");
-    outputFileLostDistance << "User,Distance\n";
+    writeHeader(outputFileLostDistance , "User,Distance\n");
     for (size_t i = 0; i < throughputVector.size(); ++i) {
-        outputFileLostDistance << i << ","
+        outputFileLostDistance << i+1 << ","
                    << distanceVector[i] << "\n";
     }
     outputFileLostDistance.close();
 
     //Exporta CSV com dados do tipo de dispositivo (IoT oiu Smartphone)
     std::ofstream outputFileDeviceType("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/plots/deviceType.csv");
-    outputFileDeviceType << "User,DeviceType\n";
+    writeHeader(outputFileDeviceType , "User,DeviceType\n");
     for (size_t i = 0; i < totalUeNum; ++i) {
-        outputFileDeviceType << i << "," << (deviceTypeVector[i] == 0 ? "Smartphone" : "IoT") << "\n";
+        outputFileDeviceType << i+1 << "," << (deviceTypeVector[i] == 0 ? "Smartphone" : "IoT") << "\n";
     }
     outputFileDeviceType.close();
 
 
     //Exporta CSV com todos os dados dos conjunto de vetores
     std::ofstream outputFileAll("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/plots/line_all.csv");
-    outputFileAll << "User,Delay,Throughput,EnergyConsumption,LostPackets,Distance\n";
+    writeHeader(outputFileAll, "User,Delay,Throughput,EnergyConsumption,LostPackets,DeviceType,Distance\n");
 
     // Supondo que os vetores delayVector, throughputVector, etc. têm o mesmo tamanho.
     size_t numEntries = delayVector.size(); // ou throughputVector.size(), assumindo que todos têm o mesmo tamanho
 
     for (size_t i = 0; i < numEntries; ++i) {
-        outputFileAll << i << ","
+        outputFileAll << i+1 << ","
                       << delayVector[i] << ","
                       << throughputVector[i] << ","
                       << energyConsumption[i] << ","
                       << lostPacketsVector[i] << ","
-                      << deviceTypeVector[i] << "\n";
+                      << (deviceTypeVector[i] == 0 ? "Smartphone" : "IoT") << ","
+                      << distanceVector[i] << "\n";
     }
     outputFileAll.close();
 

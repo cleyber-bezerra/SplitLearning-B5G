@@ -49,5 +49,5 @@ def plot_graph_from_csv(file_path):
 
 # Exemplo de uso
 if __name__ == "__main__":
-    csv_file = "../csv/line_all.csv"  # Altere para o caminho correto do seu arquivo CSV
+    csv_file = "../merge/line_all.csv"  # Altere para o caminho correto do seu arquivo CSV
     plot_graph_from_csv(csv_file)

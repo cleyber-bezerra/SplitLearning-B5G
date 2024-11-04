@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # Carregar o arquivo CSV
-file_path = '../csv/throughput.csv'
+file_path = '../merge/throughput.csv'
 data = pd.read_csv(file_path)
 
 # Converter as colunas de acurácia de validação para listas de floats

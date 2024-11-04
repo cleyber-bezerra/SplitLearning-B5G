@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # Carregar o arquivo CSV
-file_path = '../csv/delay.csv'
+file_path = '../merge/delay.csv'
 data = pd.read_csv(file_path)
 
 # Converter as colunas de Delay para listas de floats, se necessário

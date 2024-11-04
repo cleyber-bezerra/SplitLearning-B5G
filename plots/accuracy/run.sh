@@ -3,7 +3,7 @@
 # Exibe o menu de opções
 echo "Escolha o tipo de grafico:"
 echo "1 - Somente legendas"
-echo "2 - Com legendas e rotulos"
+echo "2 - Acuracia com legendas e rotulos"
 echo -n "Digite o número da opção desejada: "
 read opcao
 
@@ -13,7 +13,7 @@ case $opcao in
         python plot1.py
         ;;
     2)
-        python plot2_rotulos.py
+        python accuracy.py
         ;;
     *)
         echo "Opção inválida."

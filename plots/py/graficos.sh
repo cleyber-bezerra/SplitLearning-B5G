@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mv ../*.csv ../csv/
+#mv ../*.csv ../csv/
 
 python barra_delay.py
 python barra_energy.py

@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # Carregar o arquivo CSV
-file_path = '../csv/lostPacketsVector.csv'
+file_path = '../merge/lostPacketsVector.csv'
 data = pd.read_csv(file_path)
 
 # Converter as colunas de LostPackets para listas de floats, se necessário
