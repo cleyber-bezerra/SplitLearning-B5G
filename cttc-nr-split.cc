@@ -86,6 +86,7 @@ int main(int argc, char* argv[])
     std::vector<double> energyConsumption(totalUeNum, 0.0); // ou algum valor padrão
     std::vector<double> distanceVector(totalUeNum, 0.0);
     std::vector<uint32_t> deviceTypeVector(totalUeNum, 0); // 0 para smartphone, 1 para IoT
+    std::vector<double> jitterVector(totalUeNum, 0.0); // Inicializa o vetor de jitter com zero
 
 
     CommandLine cmd(__FILE__);
@@ -401,7 +402,6 @@ int main(int argc, char* argv[])
         }
     }
 
-
     monitor->CheckForLostPackets();
     Ptr<Ipv4FlowClassifier> classifier = DynamicCast<Ipv4FlowClassifier>(flowmonHelper.GetClassifier());
     FlowMonitor::FlowStatsContainer stats = monitor->GetFlowStats();
@@ -410,6 +410,7 @@ int main(int argc, char* argv[])
     double averageFlowThroughput = 0.0;
     double averageFlowDelay = 0.0;
 
+    double previousDelay = 0.0; // Inicializa o atraso anterior
     for (std::map<FlowId, FlowMonitor::FlowStats>::const_iterator i = stats.begin(); i != stats.end(); ++i)
     {
         // Obter o índice de UE correspondente ao FlowId
@@ -419,6 +420,9 @@ int main(int argc, char* argv[])
         double delay = i->second.rxPackets > 0 ? i->second.delaySum.GetSeconds() / i->second.rxPackets : 0.0;
         uint32_t lostPackets = i->second.txPackets - i->second.rxPackets;
 
+        // Calcula o jitter como a diferença absoluta entre o delay atual e o anterior
+        double jitter = std::abs(delay - previousDelay);
+        previousDelay = delay; // Atualiza o atraso anterior para o próximo cálculo
 
         // Armazenar os valores nos vetores baseados no índice do UE
         lostPacketsVector[ueIndex] = lostPackets;
@@ -426,6 +430,7 @@ int main(int argc, char* argv[])
         delayVector[ueIndex] = delay;
         //distanceVector[ueIndex] = delay;
         //energyConsumption[ueIndex] = energyConsumption;
+        jitterVector[ueIndex] = jitter; // Armazena o jitter calculado
 
 
         // Calcular valores médios
@@ -453,7 +458,7 @@ int main(int argc, char* argv[])
     // ALOCACAO DE MEMORIA COMPARTILHADA
     const char* shm_name = "ns3_shared_memory";
     size_t element_size = sizeof(double); // Tamanho de um elemento (double)
-    size_t num_vectors = 5; // Agora temos 5 vetores: delay, throughput, consumo de energia, perda de pacotes e distância
+    size_t num_vectors = 6; // Agora temos 5 vetores: delay, throughput, consumo de energia, perda de pacotes e distância
     size_t size = totalUeNum * element_size * num_vectors; // Calcular o tamanho correto da memória
 
     int shm_fd = shm_open(shm_name, O_CREAT | O_RDWR, 0666);
@@ -479,12 +484,13 @@ int main(int argc, char* argv[])
 
     // Escrever os dados na memória compartilhada
     for (size_t i = 0; i < totalUeNum; ++i) {
-        data[i * 6] = delayVector[i];
-        data[i * 6 + 1] = throughputVector[i];
-        data[i * 6 + 2] = energyConsumption[i];
-        data[i * 6 + 3] = lostPacketsVector[i];
-        data[i * 6 + 4] = distanceVector[i];
-        data[i * 6 + 5] = deviceTypeVector[i]; // Adicionando o tipo de dispositivo
+        data[i * 7] = delayVector[i];
+        data[i * 7 + 1] = throughputVector[i];
+        data[i * 7 + 2] = energyConsumption[i];
+        data[i * 7 + 3] = lostPacketsVector[i];
+        data[i * 7 + 4] = distanceVector[i];
+        data[i * 7 + 5] = deviceTypeVector[i];
+        data[i * 7 + 6] = jitterVector[i]; // Adiciona o jitter na memória compartilhada
     }
 
     std::cout << "Dados escritos na memória compartilhada." << std::endl;
@@ -514,6 +520,13 @@ int main(int argc, char* argv[])
     for (const auto& lostPackets : lostPacketsVector)
     {
         std::cout << lostPackets << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "Jitter: ";
+    for (const auto& jitter : jitterVector)
+    {
+        std::cout << jitter << " ";
     }
     std::cout << std::endl;
 
@@ -596,6 +609,13 @@ int main(int argc, char* argv[])
     }
     outputFileDeviceType.close();
 
+    // Exporta CSV com dados do Jitter
+    std::ofstream outputFileJitter("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/plots/jitter.csv");
+    writeHeader(outputFileJitter, "User,Jitter\n");
+    for (size_t i = 0; i < jitterVector.size(); ++i) {
+        outputFileJitter << i+1 << "," << jitterVector[i] << "\n";
+    }
+    outputFileJitter.close();
 
     //Exporta CSV com todos os dados dos conjunto de vetores
     std::ofstream outputFileAll("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/plots/line_all.csv");

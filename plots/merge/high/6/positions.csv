@@ -1,5 +1,0 @@
-NodeType,NodeId,X,Y,Z,DistanceFromBSS
-gNB,0,0,0,0,0
-UE,1,10,5,1.5,11.2805
-UE,2,20,5,1.5,20.67
-UE,3,30,5,1.5,30.4508
