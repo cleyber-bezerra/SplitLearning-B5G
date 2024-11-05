@@ -1,0 +1,5 @@
+User,Delay,Throughput,EnergyConsumption,LostPackets,DeviceType,Distance
+1,0.000272468,10.2366,357.715,2,IoT,84.5831
+2,0.000320862,10.2349,1432.17,3,IoT,169.243
+3,0.176906,42.1205,1200.75,3532,Smartphone,154.968
+4,0.25234,16.3669,1700.99,5041,Smartphone,184.444

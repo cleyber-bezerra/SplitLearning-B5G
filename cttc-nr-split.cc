@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
     uint32_t totalUeNum = ueNumPergNb * gNbNum; // Calculando o número total de UEs
     double distanceLimit = 200.0; // Limite de distanciamento em metros
     double processingPowerPerUE = 0.05; //potencia estimada para processamento por UE
-    double lossExponent = 3.0; // 2,3,4
+    double lossExponent = 4.0; // 2,3,4
 
 
 // ALOCACAO DE MEMORIA DOS VETORES
@@ -619,7 +619,7 @@ int main(int argc, char* argv[])
 
     //Exporta CSV com todos os dados dos conjunto de vetores
     std::ofstream outputFileAll("/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/plots/line_all.csv");
-    writeHeader(outputFileAll, "User,Delay,Throughput,EnergyConsumption,LostPackets,DeviceType,Distance\n");
+    writeHeader(outputFileAll, "User,Delay,Throughput,EnergyConsumption,LostPackets,Jitter\n");
 
     // Supondo que os vetores delayVector, throughputVector, etc. têm o mesmo tamanho.
     size_t numEntries = delayVector.size(); // ou throughputVector.size(), assumindo que todos têm o mesmo tamanho
@@ -630,8 +630,7 @@ int main(int argc, char* argv[])
                       << throughputVector[i] << ","
                       << energyConsumption[i] << ","
                       << lostPacketsVector[i] << ","
-                      << (deviceTypeVector[i] == 0 ? "Smartphone" : "IoT") << ","
-                      << distanceVector[i] << "\n";
+                      << jitterVector[i] << "\n";
     }
     outputFileAll.close();
 
