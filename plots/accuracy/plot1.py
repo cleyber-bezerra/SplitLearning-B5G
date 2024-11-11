@@ -36,7 +36,7 @@ def process_file(file_path, color, label):
     plt.fill_between(clients_complete, ci_low, ci_high, color=color, alpha=0.1, linewidth=0)
 
 # Caminhos para os arquivos
-files = ['low_accuracy.csv', 'medium_accuracy.csv', 'high_accuracy.csv']
+files = ['low/low_accuracy.csv', 'medium/medium_accuracy.csv', 'high/high_accuracy.csv']
 colors = ['g', 'b', 'r']
 labels = ['Low Accuracy', 'Moderate Accuracy', 'High Accuracy']
 
@@ -61,6 +61,6 @@ plt.ylim(0, None)  # Forçar eixo y a começar do zero
 plt.tight_layout()
 
 # Salvar e exibir o gráfico
-name_output_file = "packets_low_moderate_high_accuracy"
+name_output_file = "low_medium_high_accuracy"
 plt.savefig(name_output_file + ".png")
 #plt.show()

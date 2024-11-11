@@ -42,7 +42,7 @@ def process_file(file_path, color, label):
                      textcoords="offset points", xytext=(0,10), ha='center', fontsize=9, color=color)
 
 # Caminhos para os arquivos
-files = ['low_accuracy.csv', 'medium_accuracy.csv', 'high_accuracy.csv']
+files = ['low/low_accuracy.csv', 'medium/medium_accuracy.csv', 'high/high_accuracy.csv']
 colors = ['g', 'b', 'r']
 labels = ['Low Accuracy', 'Moderate Accuracy', 'High Accuracy']
 

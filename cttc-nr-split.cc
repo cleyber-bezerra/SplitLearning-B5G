@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 
 
     uint16_t gNbNum = 1;
-    uint16_t ueNumPergNb = 10;
+    uint16_t ueNumPergNb = 6;
     bool logging = false;
     bool doubleOperationalBand = true;
     uint32_t udpPacketSizeULL = 100;
