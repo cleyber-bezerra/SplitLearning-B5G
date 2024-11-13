@@ -1,3 +1,0 @@
-gerar os arquivos nos níveis distintos
-modificar o nome dos arquivos 
-executar o run.sh
