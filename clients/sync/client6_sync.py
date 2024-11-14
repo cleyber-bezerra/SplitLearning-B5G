@@ -293,7 +293,7 @@ def write_to_csv(train_acc_list, val_acc_list):
     print(train_acc_list)
     print(val_acc_list)
 
-    file_dir = '/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/csv/ia'
+    file_dir = '/home/cleyber/Documentos/ns-3-dev/scratch/SplitLearning-B5G/plots'
     if not os.path.exists(file_dir):
         os.makedirs(file_dir)
     file = os.path.join(file_dir, 'result_train_sync.csv')
