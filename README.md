@@ -1,9 +1,9 @@
 # SplitLearning-B5G
 
-<p align='center' style="margin-bottom: -4px">Cleyber Bezerra dos Reis<sup>1</sup>, Antonio Oliveira-JR<sup>1</sup></p>
-<p align='center' style="margin-bottom: -4px"><sup>1</sup>Instituto de Informática, Universidade Federal de Goiás</p>
-<p align='center' style="margin-bottom: -4px">E-mail: {cleyber.bezerra}@discente.ufg.br</p>
-<p align='center'>E-mail: {antonio}@inf.ufg.br</p>
+<p align='center' style="margin-bottom: -4px">Cleyber Bezerra dos Reis<sup>1</sup>, Victor Hugo L.Lopes<sup>2</sup></p>Antonio Oliveira-JR<sup>2</sup></p
+<p align='center' style="margin-bottom: -4px"><sup>1</sup>Instituto de Informática, Universidade Federal de Goiás - Goiânia, GO - Brazil</p>
+<p align='center' style="margin-bottom: -4px"><sup>2</sup>Instituto Federal de Goiás - Inhumas, GO - Brazil</p>
+<p align='center' style="margin-bottom: -4px">cleyber.bezerra@discente.ufg.br, victor.lopes@ifg.edu.br, antonio@inf.ufg.br</p>
 
 # Description
 O repositório contém todo o desenvolvimento referente à dissertação de mestrado intitulada "Split Learning como habilitador de redes sem fio para futuras gerações". Sendo desenvolvida por meio do Curso de Mestrado Acadêmico em Ciência da Computação - Presencial - Goiânia, pelo Instituto de Informática (INF) da Universidade Federal de Goiás (UFG).
@@ -181,6 +181,7 @@ faça a extração no terminal, acesse a pasta e execute o comando:
     git checkout -b ns-3.43-release ns-3.43
 ```
 #CONFIGURAR E COMPILAR O NS-3
+
 dentro da pasta ns-3-dev use os comandos:
 ```bash
     ./ns3 configure --enable-examples --enable-tests
