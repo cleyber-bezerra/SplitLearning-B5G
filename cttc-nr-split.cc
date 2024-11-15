@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
     uint32_t totalUeNum = ueNumPergNb * gNbNum; // Calculando o número total de UEs
     double distanceLimit = 200.0; // Limite de distanciamento em metros
     double processingPowerPerUE = 0.05; //potencia estimada para processamento por UE
-    double lossExponent = 2.0; // 2,3,4
+    double lossExponent = 3.0; // 2,3,4
 
 
 // ALOCACAO DE MEMORIA DOS VETORES

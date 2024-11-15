@@ -91,4 +91,10 @@ dentro da pasta ns-3-dev use os comandos:
 
 #BAIXAR PROJETO
 dentro da pasta ns-3-dev/scracth use os comandos:
+https://github.com/cleyber-bezerra/SplitLearning-B5G.git
 
+#EXECUTAR PROJETO
+dentro da pasta SplitLearning executer o arquivo de script.
+```bash
+	./simulator_ns3.sh
+```
