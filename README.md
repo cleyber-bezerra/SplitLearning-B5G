@@ -16,13 +16,13 @@ SplitLearning-B5G
 	gcc --version
 	make --version
 ```
-#INSTALANDO O OPENSSL
 
 #INSTALANDO O CMAKE
 
+abaixe o arquivo na versão desejada
 https://cmake.org/download/
 
-baixar o arquivo e faça a extração no terminal, acesse a pasta:
+faça a extração no terminal, acesse a pasta e execute o comando:
 ```bash
 	./bootstrap && make && sudo make install
 ```
@@ -91,7 +91,9 @@ dentro da pasta ns-3-dev use os comandos:
 
 #BAIXAR PROJETO
 dentro da pasta ns-3-dev/scracth use os comandos:
-https://github.com/cleyber-bezerra/SplitLearning-B5G.git
+```bash
+git clone https://github.com/cleyber-bezerra/SplitLearning-B5G.git
+```
 
 #EXECUTAR PROJETO
 dentro da pasta SplitLearning executer o arquivo de script.
