@@ -1,6 +1,6 @@
 # SplitLearning-B5G
 
-<p align='right' style="margin-bottom: -4px">Cleyber Bezerra dos Reis<sup>1</sup>, Victor Hugo L.Lopes<sup>2</sup></p>Antonio Oliveira-JR<sup>2</sup></p
+<p align='center' style="margin-bottom: -2px">Cleyber Bezerra dos Reis<sup>1</sup>, Victor Hugo L.Lopes<sup>2</sup></p>Antonio Oliveira-JR<sup>2</sup></p
 <p align='center' style="margin-bottom: -4px"><sup>1</sup>Instituto de Informática, Universidade Federal de Goiás - Goiânia, GO - Brazil</p>
 <p align='center' style="margin-bottom: -4px"><sup>2</sup>Instituto Federal de Goiás - Inhumas, GO - Brazil</p>
 <p align='center' style="margin-bottom: -4px">cleyber.bezerra@discente.ufg.br, victor.lopes@ifg.edu.br, antonio@inf.ufg.br</p>
