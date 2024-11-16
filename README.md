@@ -6,7 +6,7 @@
 <p align='center' style="margin-bottom: -4px">cleyber.bezerra@discente.ufg.br, victor.lopes@ifg.edu.br, antonio@inf.ufg.br</p>
 
 # Description
-O repositório contém todo o desenvolvimento referente à dissertação de mestrado intitulada "Split Learning como habilitador de redes sem fio para futuras gerações". Sendo desenvolvida por meio do Curso de Mestrado Acadêmico em Ciência da Computação - Presencial - Goiânia, pelo Instituto de Informática (INF) da Universidade Federal de Goiás (UFG).
+The repository contains all the development related to the master's dissertation entitled "Split Learning as an enabler of wireless networks for future generations". Being developed through the Academic Master's Course in Computer Science - Goiânia, by the Institute of Informatics (INF) of the Federal University of Goiás (UFG).
 
 # Table of Contents
 - [Article Summary](#getting-started)
@@ -22,14 +22,20 @@ O repositório contém todo o desenvolvimento referente à dissertação de mest
 
 ## Abstract
 
-Split Learning (SL) is a promising approach as an effective solution to data security and privacy concerns in training Deep Neural Networks (DNN), due to its approach characteristics of combining raw data security and the division of the model between client devices and central server.
+Split Learning (SL) is an innovative and effective approach to address security and privacy concerns in the training of deep neural networks (DNN). This technique combines the protection of raw data with the division of the model between client devices and a central server, significantly reducing the risks of data leaks and cyberattacks. In addition, it enables the training of deep neural networks on devices with limited computational resources.
+
+However, splitting the model leads to an increase in the communication flow between the distributed devices and the central server, which can not only generate a communication overhead in environments with computational constraints, but also negatively impact the training accuracy, compromising the final results of the model.
+
+This paper covers the inference problem of improving accuracy. Through a case study of integrating (ns3-ai) with distributed Split Learning to train a Convolutional Neural Network (CNN) and MNIST dataset. The NS3-LENA simulator used the characteristics of a B5G network environment with mobile devices (UE) and a gNB (5G access module).
+
+In this integrated scenario, network experiments were simulated with distance variations between 150 mt. With powers of 10, 30 and 50 dBm and loss exponents of 2, 3 and 4 dB. Based on the network output results, with regard to latency, a policy was defined that values above 4 seconds are considered timeouts and are not included in machine learning experiments. With the objective of training and testing the split learning model, the impacts of changes in the network simulation on training accuracy were observed.
 
 
 [Back to TOC](#table-of-contents)
 
 ## Baselines
 
-The methods defined as baselines for our proposal: (1) the use of the asynchronous algorithm in training the Split Learning model and (2) the definition of training based on events provided from the simulation in NS3 based on the established latency policy. The training uses the file provided by the simulation (simulator_ns3.csv). 10 devices are simulated and the established policy for network latency is nodes below 04 seconds.
+The methods defined as baselines for our proposal are: (1) the use of the synchronous algorithm in the training of the Split Learning Vanilla model and (2) the definition of the training based on events provided by the simulation in NS3, following the latency policy established in 15 distinct seeds for each exponent. In the simulation, six (06) mobile devices and the base station are considered, with the policy defined for network latency stipulating nodes with latency below 04 seconds.
 
 [Back to TOC](#table-of-contents)
 
@@ -59,53 +65,6 @@ Figure 1 shows the result of latencies in the network simulation.
     </figurecaption>
 </p>
 
-Figure 2 shows the result of packet losses in the network simulation.
-
-
-<p align='center'>
-    <img src='/images/figure3.png' width='500'>
-</p>    
-<p align='center'>
-    <figurecaption>
-        Fig. 3. Throughput.
-    </figurecaption>
-</p>
-
-Figure 3 demonstrates the throughput results in the network simulation.
-
-<p align='center'>
-    <img src='/images/figure4.png' width='500'>
-</p>    
-<p align='center'>
-    <figurecaption>
-        Fig. 4. Throughput.
-    </figurecaption>
-</p>
-
-Figure 4 demonstrates the energy consumption results in the network simulation.
-
-### Results in the machine learning environment with training and testing
-
-<p align='center'>
-    <img src='/images/figure5.png' width='500'>
-</p>    
-<p align='center'>
-    <figurecaption>
-        Fig. 5. Accuracy per Round.
-    </figurecaption>
-</p>
-Figure 5 shows the result of accuracy per round during training and testing in the Split Learning learning model.
-
-<p align='center'>
-    <img src='/images/figure6.png' width='500'>
-</p>    
-<p align='center'>
-    <figurecaption>
-        Fig. 6. Processing Accuracy.
-    </figurecaption>
-</p>
-
-Figure 6 demonstrates the processing accuracy results during training and testing in the Split Learning learning model.
 
 [Back to TOC](#table-of-contents)
 
@@ -144,7 +103,8 @@ Figure 6 demonstrates the processing accuracy results during training and testin
 [Back to TOC](#table-of-contents)
 
 ## Preparing Environment
-#INSTALANDO O GCC E MAKE
+
+INSTALL GCC AND MAKE
 ```bash
     sudo apt update
     sudo apt install build-essential
@@ -161,34 +121,34 @@ Figure 6 demonstrates the processing accuracy results during training and testin
     make --version
 ```
 
-#INSTALANDO O CMAKE
+INSTALl THE CMAKE
 
-abaixe o arquivo na versão desejada
+download the file in the desired version:
 https://cmake.org/download/
 
-faça a extração no terminal, acesse a pasta e execute o comando:
+extract it, access the folder and run the command:
 ```bash
     ./bootstrap && make && sudo make install
 ```
 
-#INSTALANDO O GIT
+INSTALL THE GIT
 ```bash
     sudo apt-get install git -y
 ```
-#INSTALANDO O NS-3-DEV
+INSTALL THE NS-3-DEV
 ```bash
     git clone https://gitlab.com/nsnam/ns-3-dev.git
     git checkout -b ns-3.43-release ns-3.43
 ```
-#CONFIGURAR E COMPILAR O NS-3
+CONFIGURE AND COMPILE NS-3
 
-dentro da pasta ns-3-dev use os comandos:
+In the ns-3-dev folder use the commands:
 ```bash
     ./ns3 configure --enable-examples --enable-tests
     ./ns3 build
 ```
 
-#INSTALAR O NR-LENA
+INSTALL THE NR-LENA
 ```bash
     sudo apt-get install libc6-dev
     sudo apt-get install sqlite sqlite3 libsqlite3-dev
@@ -201,7 +161,7 @@ dentro da pasta ns-3-dev use os comandos:
     cd nr
     git checkout -b 5g-lena-v3.1.y origin/5g-lena-v3.1.y
 ```
-#INSTALAR O NS3-IA
+INSTALL THE NS3-IA
 ```bash
     sudo apt install python3-pip
     
@@ -229,14 +189,14 @@ dentro da pasta ns-3-dev use os comandos:
     pip3 install . --user
 ```
 
-#HABILITAR MODULOS
+ENABLE MODULES
 ```bash
     ./ns3 configure --enable-modules=nr,internet-apps,flow-monitor,config-store,buildings,applications,network,core,wifi,energy,spectrum,propagation,mobility,antenna
 ```
 
-#BAIXAR PROJETO
+DOWNLOAD PROJECT
 
-dentro da pasta ns-3-dev/scracth use os comandos:
+inside the ns-3-dev/scratch folder use the commands:
 ```bash
 git clone https://github.com/cleyber-bezerra/SplitLearning-B5G.git
 ```
@@ -244,9 +204,9 @@ git clone https://github.com/cleyber-bezerra/SplitLearning-B5G.git
 
 ## Run Experiments
 
-#EXECUTAR PROJETO
+EXECUTE PROJECT
 
-dentro da pasta SplitLearning executer o arquivo de script.
+inside the Split Learning folder run the script file.
 ```bash
     ./simulator_ns3.sh
 ```
