@@ -70,13 +70,13 @@ int main(int argc, char* argv[])
     uint16_t numerologyBwp2 = 2;
     double centralFrequencyBand2 = 28.2e9;
     double bandwidthBand2 = 800e6;
-    double totalTxPower = 35;
+    double totalTxPower = 26; // 0 13 26 taxa de potência em dBm
     std::string simTag = "default";
     std::string outputDir = "./";
     uint32_t totalUeNum = ueNumPergNb * gNbNum; // Calculando o número total de UEs
     double distanceLimit = 200.0; // Limite de distanciamento em metros
     double processingPowerPerUE = 0.05; //potencia estimada para processamento por UE
-    double lossExponent = 3.0; // 2,3,4
+    double lossExponent = 4.0; // 2,3,4
 
 
 // ALOCACAO DE MEMORIA DOS VETORES
@@ -366,14 +366,14 @@ int main(int argc, char* argv[])
     Simulator::Stop(simTime);
     Simulator::Run();
 
-    // Definir 50% como smartphones e 50% como IoT
-    for (uint32_t i = 0; i < totalUeNum; ++i) {
-        if (i < totalUeNum / 2) {
-            deviceTypeVector[i] = 1; // IoT
-        } else {
-            deviceTypeVector[i] = 0; // Smartphone
-        }
-    }
+    // // Definir 50% como smartphones e 50% como IoT
+    // for (uint32_t i = 0; i < totalUeNum; ++i) {
+    //     if (i < totalUeNum / 2) {
+    //         deviceTypeVector[i] = 1; // IoT
+    //     } else {
+    //         deviceTypeVector[i] = 0; // Smartphone
+    //     }
+    // }
 
 
     // Cálculo do consumo de energia baseado na distância
@@ -545,12 +545,12 @@ int main(int argc, char* argv[])
     }
     std::cout << std::endl;
 
-    std::cout << "Model Device 0-martphone 1-IoT: ";
-    for (const auto& deviceTypeVector : deviceTypeVector)
-    {
-        std::cout << deviceTypeVector << " ";
-    }
-    std::cout << std::endl;
+    // std::cout << "Model Device 0-martphone 1-IoT: ";
+    // for (const auto& deviceTypeVector : deviceTypeVector)
+    // {
+    //     std::cout << deviceTypeVector << " ";
+    // }
+    // std::cout << std::endl;
 
     // Imprimir resultados médios
     std::cout << "Average Delay: " << averageFlowDelay << " s\n";

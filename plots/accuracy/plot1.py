@@ -61,6 +61,6 @@ plt.ylim(0, None)  # Forçar eixo y a começar do zero
 plt.tight_layout()
 
 # Salvar e exibir o gráfico
-name_output_file = "packets_low_moderate_high_accuracy"
+name_output_file = "accuracy"
 plt.savefig(name_output_file + ".png")
 #plt.show()

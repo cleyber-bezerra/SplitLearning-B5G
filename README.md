@@ -41,10 +41,10 @@ The methods defined as baselines for our proposal are: (1) the use of the synchr
 ## Results
 ### Results in the communication network environment.
 
-Demonstrations of results within the scope of simulation on the Wi-Fi network, graphically presenting: latencies, transfer rates, packet loss rates and energy consumption.
+Demonstrations of results within the scope of simulation network, graphically presenting: latencies, transfer rates, packet loss rates and energy consumption.
 
 <p align='center'>
-    <img src='/images/figure1.png' width='500'>
+    <img src='/images/figure1.png' width='250'>
 </p>    
 <p align='center'>
     <figurecaption>
@@ -56,7 +56,7 @@ Figure 1 shows the result of latencies in the network simulation.
 
 
 <p align='center'>
-    <img src='/images/figure2.png' width='500'>
+    <img src='/images/figure2.png' width='250'>
 </p>    
 <p align='center'>
     <figurecaption>

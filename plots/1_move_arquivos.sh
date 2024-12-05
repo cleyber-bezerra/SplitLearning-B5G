@@ -10,7 +10,7 @@ if [ ! -d "$dir" ]; then
 fi
 
 # Lista de pastas a serem verificadas
-subdirs=("1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15")
+subdirs=("1" "2" "3" "4" "5" "6" "7" "8" "9" "10")
 
 # Verificar e criar as subpastas, se necessário
 for subdir in "${subdirs[@]}"; do
@@ -52,21 +52,6 @@ fi
 if [ ! -f "accuracy/10/result_train_sync.csv" ]; then 
    mv result_train_sync.csv accuracy/10/ 
 fi
-if [ ! -f "accuracy/11/result_train_sync.csv" ]; then 
-   mv result_train_sync.csv accuracy/11/ 
-fi
-if [ ! -f "accuracy/12/result_train_sync.csv" ]; then 
-   mv result_train_sync.csv accuracy/12/ 
-fi
-if [ ! -f "accuracy/13/result_train_sync.csv" ]; then 
-   mv result_train_sync.csv accuracy/13/ 
-fi
-if [ ! -f "accuracy/14/result_train_sync.csv" ]; then 
-   mv result_train_sync.csv accuracy/14/ 
-fi
-if [ ! -f "accuracy/15/result_train_sync.csv" ]; then 
-   mv result_train_sync.csv accuracy/15/ 
-fi
 
 
 #REDE
@@ -100,24 +85,7 @@ fi
 if [ ! -f "merge/10/delay.csv" ]; then 
    mv *.csv merge/10/ 
 fi
-if [ ! -f "merge/11/delay.csv" ]; then 
-   mv *.csv merge/11/ 
-fi
-if [ ! -f "merge/12/delay.csv" ]; then 
-   mv *.csv merge/12/ 
-fi
-if [ ! -f "merge/13/delay.csv" ]; then 
-   mv *.csv merge/13/ 
-fi
-if [ ! -f "merge/14/delay.csv" ]; then 
-   mv *.csv merge/14/ 
-fi
-if [ ! -f "merge/15/delay.csv" ]; then 
-   mv *.csv merge/15/ 
-fi
-if [ ! -f "merge/1/delay.csv" ]; then 
-   mv *.csv merge/01/ 
-fi
+
 done
 
 exit 0
