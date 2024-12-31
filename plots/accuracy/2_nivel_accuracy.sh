@@ -36,4 +36,5 @@ else
     echo "Arquivo result_train_sync.csv não encontrado."
 fi
 
+python passar_para_metros.py
 #source run.sh

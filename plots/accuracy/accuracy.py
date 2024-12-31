@@ -22,29 +22,20 @@ def process_file(file_path, color, label):
     ci_low = grouped['ci_low'].to_numpy()         # Convertendo para NumPy array
     ci_high = grouped['ci_high'].to_numpy()       # Convertendo para NumPy array
 
-    # Usar os valores reais de clients
-    clients_complete = np.arange(1, len(clients) + 1)  # Ajustar para o tamanho correto
-
-    # Verificar o comprimento dos arrays
-    if len(clients_complete) != len(mean_rx_packets):
-        print(f"Warning: Clients and mean_rx_packets lengths do not match for file {file_path}")
-        print(f"clients_complete: {clients_complete}")
-        print(f"mean_rx_packets: {mean_rx_packets}")
-
     # Plotar o gráfico
-    plt.plot(clients_complete, mean_rx_packets, marker='', linestyle='-', linewidth=1, color=color, label=label)
-    plt.fill_between(clients_complete, ci_low, ci_high, color=color, alpha=0.1, linewidth=0)
+    plt.plot(clients, mean_rx_packets, marker='', linestyle='-', linewidth=1, color=color, label=label)
+    plt.fill_between(clients, ci_low, ci_high, color=color, alpha=0.1, linewidth=0)
 
     # Adicionar anotações para cada ponto
-    for i in range(len(clients_complete)):
-        plt.annotate(f'({clients_complete[i]}, {mean_rx_packets[i]:.2f})',
-                     (clients_complete[i], mean_rx_packets[i]),
-                     textcoords="offset points", xytext=(0,10), ha='center', fontsize=9, color=color)
+    for i, client in enumerate(clients):
+        plt.annotate(f'({client}, {mean_rx_packets[i]:.2f})',
+                     (client, mean_rx_packets[i]),
+                     textcoords="offset points", xytext=(0, 10), ha='center', fontsize=9, color=color)
 
 # Caminhos para os arquivos
 files = ['low_accuracy.csv', 'medium_accuracy.csv', 'high_accuracy.csv']
 colors = ['g', 'b', 'r']
-labels = ['Low Accuracy', 'Moderate Accuracy', 'High Accuracy']
+labels = ['Baixa - 2 dB', 'Média - 3 dB', 'Alta - 4dB']
 
 # Configuração do plot
 plt.figure(figsize=(10, 6))
@@ -54,12 +45,12 @@ for file, color, label in zip(files, colors, labels):
     process_file(file, color, label)
 
 # Configuração do gráfico
-plt.title('Average Accuracy for each User', fontsize=16)
-plt.xlabel('Users', fontsize=15)
-plt.ylabel('Accuracy', fontsize=15)
+plt.title('Médias de Acurácia - 26 dBm', fontsize=16)
+plt.xlabel('Distância do gNB (mt)', fontsize=15)
+plt.ylabel('Acurácia', fontsize=15)
 plt.grid(True)
-plt.legend(loc='center right', bbox_to_anchor=(1.31,0.5), fontsize=11)  # Legenda no canto inferior direito
-plt.xticks(np.arange(1, 7), rotation=0, fontsize=13)
+plt.legend(loc='center right', bbox_to_anchor=(1.31, 0.5), fontsize=11)  # Legenda no canto inferior direito
+plt.xticks(fontsize=13, rotation=0)
 plt.yticks(fontsize=13)
 plt.ylim(0, None)  # Forçar eixo y a começar do zero
 plt.tight_layout()
@@ -68,6 +59,6 @@ plt.tight_layout()
 plt.tight_layout()
 
 # Salvar e exibir o gráfico
-name_output_file = "packets_low_moderate_high_accuracy"
+name_output_file = "accuracy"
 plt.savefig(name_output_file + ".png")
 #plt.show()

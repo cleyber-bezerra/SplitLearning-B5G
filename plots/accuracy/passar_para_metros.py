@@ -52,8 +52,8 @@ df.to_csv(output_file, index=False)
 print(f"File saved successfully to {output_file}")
 
 # Define the input and output file paths
-input_file = "merge_accuracy1.csv"  # Replace with your input file name
-output_file = "merge_accuracy.csv"  # Replace with your desired output file name
+input_file = "medium_accuracy1.csv"  # Replace with your input file name
+output_file = "medium_accuracy.csv"  # Replace with your desired output file name
 
 # Define the mapping for User column
 mapping = {
