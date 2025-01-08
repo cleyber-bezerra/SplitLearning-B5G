@@ -45,11 +45,11 @@ Demonstrations of results within the scope of network simulation, in two differe
 
 <div style="display: flex; justify-content: center; align-items: center;">
     <div style="text-align: center; margin-right: 20px;">
-        <img src="/images/graficoAtrasos.png" width="250">
+        <img src="/images/graficoAtrasos.png" width="550">
         <figcaption>Fig. 1. Latency.</figcaption>
     </div>
     <div style="text-align: center;">
-        <img src="/images/graficoVazao.png" width="250">
+        <img src="/images/graficoVazao.png" width="550">
         <figcaption>Fig. 2. Throughput.</figcaption>
     </div>
 </div>
