@@ -27,7 +27,7 @@ However, splitting the model leads to an increase in the communication flow betw
 
 This paper covers the inference problem of improving accuracy. Through a case study of integrating (ns3-ai) with distributed Split Learning to train a Convolutional Neural Network (CNN) and MNIST dataset. The NS3-LENA simulator used the characteristics of a B5G network environment with mobile devices (UE) and a gNB (5G access module).
 
-In this integrated scenario, network experiments were simulated with distance variations between 150 mt. With powers of 10, 30 and 50 dBm and loss exponents of 2, 3 and 4 dB. Based on the network output results, with regard to latency, a policy was defined that values above 4 seconds are considered timeouts and are not included in machine learning experiments. With the objective of training and testing the split learning model, the impacts of changes in the network simulation on training accuracy were observed.
+In this integrated scenario, network experiments were simulated with distance variations between 200 mt. With powers of 13 and 26 dBm and loss exponents of 2, 3 and 4 dB. Based on the network output results, with regard to latency, a policy was defined that values above 10 seconds are considered timeouts and are not included in machine learning experiments. With the objective of training and testing the split learning model, the impacts of changes in the network simulation on training accuracy were observed.
 
 
 [Back to TOC](#table-of-contents)
