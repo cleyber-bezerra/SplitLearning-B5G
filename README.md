@@ -41,29 +41,42 @@ The methods defined as baselines for our proposal are: (1) the use of the synchr
 ## Results
 ### Results in the communication network environment.
 
-Demonstrations of results within the scope of simulation network, graphically presenting: latencies, transfer rates, packet loss rates and energy consumption.
+Demonstrations of results within the scope of network simulation, in two different scenarios, graphically presenting: latencies, packet loss rates and energy consumption.
 
-<p align='center'>
-    <img src='/images/figure1.png' width='250'>
-</p>    
-<p align='center'>
-    <figurecaption>
-        Fig. 1. Latencys.
-    </figurecaption>
-</p>
+<div style="display: flex; justify-content: center; align-items: center;">
+    <div style="text-align: center; margin-right: 20px;">
+        <img src="/images/graficoAtrasos.png" width="250">
+        <figcaption>Fig. 1. Latency.</figcaption>
+    </div>
+    <div style="text-align: center;">
+        <img src="/images/graficoVazao.png" width="250">
+        <figcaption>Fig. 2. Throughput.</figcaption>
+    </div>
+</div>
 
-Figure 1 shows the result of latencies in the network simulation.
+
+Figures 1 and 2 show the latency and throughput results in the network simulation.
 
 
-<p align='center'>
-    <img src='/images/figure2.png' width='250'>
-</p>    
-<p align='center'>
-    <figurecaption>
-        Fig. 2. Packet Losses.
-    </figurecaption>
-</p>
+<div style="display: flex; justify-content: center; align-items: center;">
+    <div style="text-align: center; margin-right: 20px;">
+        <img src="/images/graficoPerda.png" width="250">
+        <figcaption>Fig. 3. Packet Loss.</figcaption>
+    </div>
+    <div style="text-align: center;">
+        <img src="/images/graficoEnergia.png" width="250">
+        <figcaption>Fig. 4. Energy Consumed .</figcaption>
+    </div>
+</div>
 
+Figures 3 and 4 show the results of packet loss and energy consumption in the network simulation.
+
+<div style="text-align: center; margin-right: 20px;">
+    <img src="/images/graficoAcuracia.png" width="250">
+    <figcaption>Fig. 5. Accuracy.</figcaption>
+</div>
+
+Figure 5 shows the accuracy result in training.
 
 [Back to TOC](#table-of-contents)
 

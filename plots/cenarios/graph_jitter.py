@@ -60,6 +60,6 @@ plt.tight_layout()
 plt.tight_layout()
 
 # Salvar e exibir o gráfico
-name_output_file = "jitter"
+name_output_file = "graficoJitter"
 plt.savefig(name_output_file + ".png")
 #plt.show()
