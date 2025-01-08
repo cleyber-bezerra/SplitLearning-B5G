@@ -60,11 +60,11 @@ Figures 1 and 2 show the latency and throughput results in the network simulatio
 
 <div style="display: flex; justify-content: center; align-items: center;">
     <div style="text-align: center; margin-right: 20px;">
-        <img src="/images/graficoPerda.png" width="250">
+        <img src="/images/graficoPerda.png" width="550">
         <figcaption>Fig. 3. Packet Loss.</figcaption>
     </div>
     <div style="text-align: center;">
-        <img src="/images/graficoEnergia.png" width="250">
+        <img src="/images/graficoEnergia.png" width="550">
         <figcaption>Fig. 4. Energy Consumed .</figcaption>
     </div>
 </div>
@@ -72,7 +72,7 @@ Figures 1 and 2 show the latency and throughput results in the network simulatio
 Figures 3 and 4 show the results of packet loss and energy consumption in the network simulation.
 
 <div style="text-align: center; margin-right: 20px;">
-    <img src="/images/graficoAcuracia.png" width="250">
+    <img src="/images/graficoAcuracia.png" width="550">
     <figcaption>Fig. 5. Accuracy.</figcaption>
 </div>
 
