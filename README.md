@@ -34,14 +34,14 @@ In this integrated scenario, network experiments were simulated with distance va
 
 ## Baselines
 
-The methods defined as baselines for our proposal are: (1) the use of the synchronous algorithm in the training of the Split Learning Vanilla model and (2) the definition of the training based on events provided by the simulation in NS3, following the latency policy established in 15 distinct seeds for each exponent. In the simulation, six (06) mobile devices and the base station are considered, with the policy defined for network latency stipulating nodes with latency below 04 seconds.
+The methods defined as baselines for our proposal are: (1) the use of the synchronous algorithm in the training of the Split Learning Vanilla model and (2) the definition of the training based on events provided by the simulation in NS3, following the latency policy established in 15 distinct seeds for each exponent. In the simulation, six (06) mobile devices and the base station are considered, with the policy defined for network latency stipulating nodes with latency below 10 seconds.
 
 [Back to TOC](#table-of-contents)
 
 ## Results
 ### Results in the communication network environment.
 
-Demonstrations of results within the scope of network simulation, in two different scenarios, graphically presenting: latencies, packet loss rates and energy consumption.
+Demonstrations of results within the scope of network simulation, in two different scenarios, graphically presenting: latencies, througput, packet loss rates and energy consumption.
 
 <div style="display: flex; justify-content: center; align-items: center;">
     <div style="text-align: center; margin-right: 20px;">
