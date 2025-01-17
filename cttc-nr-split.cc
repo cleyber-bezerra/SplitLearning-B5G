@@ -8,7 +8,6 @@
 #include "ns3/internet-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/nr-module.h"
-#include "ns3/lte-helper.h" //
 #include "ns3/point-to-point-module.h"
 #include "ns3/flow-monitor-helper.h"
 #include "ns3/mobility-helper.h"
@@ -218,17 +217,6 @@ int main(int argc, char* argv[])
     nrHelper->SetBeamformingHelper(idealBeamformingHelper);
     nrHelper->SetEpcHelper(epcHelper);
 
-    // Configurar o scheduler e definir o MCS
-    //nrHelper->SetSchedulerTypeId(TypeId::LookupByName("ns3::NrMacSchedulerTdma")); // TDMA Scheduler
-    //Config::SetDefault ("ns3::NrMacSchedulerTdma::McsTable", StringValue ("qam64"));
-    //nrHelper->SetSchedulerAttribute("Mcs", UintegerValue(10)); // Configura um MCS fixo de 10 (pode ser ajustado)
-
-    // Ativar Persistent Scheduling (SPS) - Escolha o correto conforme o seu scheduler
-    Config::SetDefault("ns3::NrMacSchedulerTdma::EnableSps", BooleanValue(true));  // Para TDMA
-    //Config::SetDefault("ns3::NrMacSchedulerOfdma::EnableSps", BooleanValue(true));  // Para OFDMA
-    //Config::SetDefault("ns3::LteEnbMac::SpsConfig", BooleanValue(true));  // Se estiver usando LTE
-
-    
     BandwidthPartInfoPtrVector allBwps;
     CcBwpCreator ccBwpCreator;
     const uint8_t numCcPerBand = 1;
