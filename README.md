@@ -110,7 +110,7 @@ Figure 5 shows the accuracy result in training.
 	python --version
 	python3 --version
   ```
-- [ns-allinone (3.42)](https://www.nsnam.org/releases/ns-3-42/download/ )
+- [ns-allinone (3.42)](https://www.nsnam.org/releases/ns-3-42/download/ ) or [ns-3-dev](https://gitlab.com/nsnam/ns-3-dev/ )
   
 [Back to TOC](#table-of-contents)
 
