@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 
 
     uint16_t gNbNum = 1;
-    uint16_t ueNumPergNb = 6;
+    uint16_t ueNumPergNb = 8;
     bool logging = false;
     bool doubleOperationalBand = true;
     uint32_t udpPacketSizeULL = 100;
@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
     std::string simTag = "default";
     std::string outputDir = "./";
     uint32_t totalUeNum = ueNumPergNb * gNbNum; // Calculando o número total de UEs
-    double distanceLimit = 200.0; // Limite de distanciamento em metros
+    double distanceLimit = 1000.0; // Limite de distanciamento em metros
     double processingPowerPerUE = 0.05; //potencia estimada para processamento por UE
     double lossExponent = 3.0; // 2,3,4
 
