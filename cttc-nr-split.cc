@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
     std::string simTag = "default";
     std::string outputDir = "./";
     uint32_t totalUeNum = ueNumPergNb * gNbNum; // Calculando o número total de UEs
-    double distanceLimit = 1000.0; // Limite de distanciamento em metros
+    double distanceLimit = 500.0; // Limite de distanciamento em metros
     double processingPowerPerUE = 0.05; //potencia estimada para processamento por UE
     double lossExponent = 3.0; // 2,3,4
 
