@@ -101,6 +101,7 @@ Figure 5 shows the accuracy result in training.
   
   command to know the version of CMAKE in the terminal.
   ```bash
+  	sudo snap install cmake --classic --break-system-packages
 	cmake --version
   ```
 - python (>=3.11.5)
@@ -191,6 +192,7 @@ INSTALL THE NS3-IA
 
     pip install matplotlib==3.3.2
     pip install psutil==5.7.2
+    pip install tqdm==4.65.0
 ```
 
 ```bash
