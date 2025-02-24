@@ -101,7 +101,7 @@ Figure 5 shows the accuracy result in training.
   
   command to know the version of CMAKE in the terminal.
   ```bash
-  sudo snap install cmake --classic --break-system-packages
+    sudo snap install cmake --classic --break-system-packages
 	cmake --version
   ```
 - python (>=3.11.5)
