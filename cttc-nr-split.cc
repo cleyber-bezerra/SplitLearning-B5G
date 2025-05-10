@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 
 
     uint16_t gNbNum = 1;
-    uint16_t ueNumPergNb = 20;
+    uint16_t ueNumPergNb = 22;
     bool logging = false;
     bool doubleOperationalBand = true;
     uint32_t udpPacketSizeULL = 100;
@@ -673,7 +673,7 @@ int main(int argc, char* argv[])
 
     // CHAMAR o script Python
     // Crie o comando concatenando a variável totalUeNum à string do comando
-    std::string command = "python3 scratch/SplitLearning-B5G/servers/server_sync1.py " + std::to_string(totalUeNum);
+    std::string command = "python3 scratch/SplitLearning-B5G/servers/server_sync.py " + std::to_string(totalUeNum);
 
     // Use o comando no system()
     int result = system(command.c_str());
