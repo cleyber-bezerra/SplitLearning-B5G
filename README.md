@@ -178,23 +178,27 @@ INSTALL THE NS3-IA
 ```bash
     sudo apt install python3-pip
     
-    pip install tensorflow==2.17.0
-    pip install cloudpickle==1.2.0
+    pip install tensorflow
+    pip install cloudpickle
     pip install pyzmq
-    pip install protobuf==3.20.3
-    pip install tensorflow-estimator==2.15.0
-    pip install tensorboard==2.17.0
+    pip install protobuf
+    pip install tensorflow-estimator
+    pip install tensorboard
 
-    pip install numpy==1.18.1
-    pip install Keras==3.2.0
-    pip install Keras-Applications==1.0.8
-    pip install Keras-Preprocessing==1.1.2
+    pip install numpy
+    pip install Keras
+    pip install Keras-Applications
+    pip install Keras-Preprocessing
 
-    pip install matplotlib==3.3.2
-    pip install psutil==5.7.2
-    pip install tqdm==4.65.0
+    pip install matplotlib
+    pip install psutil
+    pip install tqdm
+
+    pip install torch
+    pip install torchvision
+    pip install pandas
 ```
-
+    
 ```bash
     cd contrib/
     git clone https://github.com/hust-diangroup/ns3-ai.git
